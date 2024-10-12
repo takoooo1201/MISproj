@@ -1,0 +1,24 @@
+<form (submit)="onSubmit()">
+    <label for="username">條碼:</label>
+    <input type="text" [(ngModel)]="username" placeholder="Enter your username" name="username"/>
+    <br>
+
+    <label for="password">驗證碼:</label>
+    <input type="password" [(ngModel)]="password" placeholder="Enter your password" name="password"/>
+    <br>
+
+    <button type="submit">Login</button>
+  </form>
+  <div *ngIf="flag">
+    <button (click)="navigateToHome()">Go to Home</button>
+  </div>
+
+  <mat-card *ngIf="responseData" class="response-card">
+    <h2>{{responseData["msg"]}}</h2>
+    <mat-card-header>
+      <mat-card-title>Response Data</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <pre>{{ responseData | json }}</pre>
+    </mat-card-content>
+  </mat-card>

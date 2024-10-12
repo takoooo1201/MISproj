@@ -1,0 +1,30 @@
+<!-- <div>
+    <button (click)="navigateToLogin()">食衣住</button>
+    <button (click)="navigateToNotDeveloped()">行</button>
+</div> -->
+
+<div class="container">
+  <header>
+    <h1>碳排計算系統</h1>
+    <div class="header-buttons">
+      <button class="btn-secondary">切換至客戶卡</button>
+      <button class="btn-primary">登出</button>
+    </div>
+  </header>
+  
+  <div class="content">
+    <nav>
+      <h2>雲端發票</h2>
+      <ul>
+        <li (click)="navigateToLogin()">明細查詢</li>
+        <li (click)="navigateToNotDeveloped()">節碳量查詢</li>
+        <li (click)="navigateToNotDeveloped()">碳排量查詢</li>
+      </ul>
+    </nav>
+    
+    <main>
+      <p>雲端發票頁面</p>
+    </main>
+  </div>
+</div>
+

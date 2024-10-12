@@ -1,0 +1,27 @@
+{
+  "/local-api": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/local-api": ""
+    }
+  },
+  "/invoice-api": {
+    "target": "https://api.einvoice.nat.gov.tw",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/invoice-api": ""
+    }
+  },
+  "/sales-api": {
+    "target": "https://www-vc.einvoice.nat.gov.tw",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/sales-api": ""
+    }
+  }
+}
+

@@ -1,0 +1,23 @@
+<p>einvoice-detail works!</p>
+<div>
+    <h2>Einvoice Detail</h2>
+    <form (submit)="fetchInvoiceDetails()">
+      <label for="invNum">Invoice Number:</label>
+      <input id="invNum" [(ngModel)]="invNum" name="invNum" required>
+  
+      <label for="invDate">Invoice Date (YYYYMMDD):</label>
+      <input id="invDate" [(ngModel)]="invDate" name="invDate" required>
+  
+      <button type="submit">Fetch Details</button>
+    </form>
+  
+    <mat-card *ngIf="responseData" class="response-card">
+      <h2>{{responseData["msg"]}}</h2>
+      <mat-card-header>
+        <mat-card-title>Response Data</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <pre>{{ responseData | json }}</pre>
+      </mat-card-content>
+    </mat-card>
+  </div>

@@ -1,0 +1,52 @@
+<p>einvoice works!</p>
+
+<div>
+    <h2>Einvoice Detail</h2>
+    <form (submit)="fetchInvoiceDetails()">
+      <label for="startDate">startDate(YYYYMMDD):</label>
+      <input id="startDate" [(ngModel)]="startDate" name="startDate" required>
+  
+      <label for="endDate">endDate(YYYYMMDD):</label>
+      <input id="endDate" [(ngModel)]="endDate" name="endDate" required>
+  
+      <button type="submit">Fetch Details</button>
+    </form>
+  
+    <!-- <mat-card *ngIf="responseData" class="response-card">
+      <h2>{{responseData["msg"]}}</h2>
+      <mat-card-header>
+        <mat-card-title>Response Data</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <pre>{{ responseData | json }}</pre>
+      </mat-card-content>
+    </mat-card> -->
+    <mat-card *ngIf="responseData" class="response-card">
+      <!-- <h2>{{ responseData.msg }}</h2> -->
+      <mat-card-header>
+        <mat-card-title>Invoice Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let detail of responseData.details" class="invoice-detail">
+          <h3>Invoice Number: {{ detail.invNum }}</h3>
+          <!-- <p>Seller Name: {{ detail.sellerName }}</p> -->
+          <p>
+            Invoice Date:
+            {{ detail.invDate.year + 1911 }}/{{ detail.invDate.month }}/{{ detail.invDate.date }}
+          </p>
+          <mat-divider></mat-divider>
+          <mat-list>
+            <mat-list-item *ngFor="let item of detail.items">
+              <span>
+                <strong>Description:</strong> {{ item.description }}
+              </span>
+              <span class="quantity">
+                <strong>Quantity:</strong> {{ item.quantity }}
+              </span>
+            </mat-list-item>
+          </mat-list>
+          <mat-divider></mat-divider>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
