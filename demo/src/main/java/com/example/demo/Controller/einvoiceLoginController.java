@@ -1,5 +1,5 @@
 package com.example.demo.Controller;
-
+import com.example.demo.Service.LoginService;
 
 import org.springframework.web.bind.annotation.*;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +18,7 @@ import javax.crypto.spec.SecretKeySpec; // For specifying the AES secret key
 @RestController
 @RequestMapping("api")
 public class einvoiceLoginController {
+  
     private String decryptAES(String encryptedText, String secretKey) throws Exception {
         // AES requires a 16-byte key
         SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
@@ -38,6 +39,10 @@ public class einvoiceLoginController {
     
     @PostMapping("/login")
     public Response login(@RequestBody LoginRequest loginRequest) {
+        
+
+
+
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
         // Decode Base64-encoded username and password
@@ -119,6 +124,11 @@ public class einvoiceLoginController {
             String signature = Base64.getEncoder().encodeToString(hmacBytes);
             System.out.println("Generated Signature: " + signature);
             System.out.println("Generated time: " + timeStamp);
+
+            
+   
+
+
             return new Response("OK" ,signature,timeStamp);
             //return new Response("ok",signature,timeStamp);
         } catch (Exception e) {
