@@ -11,7 +11,7 @@ import java.util.*;
 
 @Service
 public class LoginService {
-    public void performApiCall(String username, String password,String timeStamp, String signature) {
+    public String performApiCall(String username, String password,String timeStamp, String signature) {
         // Step 2: Make the POST request to '/invoice-api/PB2CAPIVAN/Carrier/Aggregate'
         String url = "https://api.einvoice.nat.gov.tw/PB2CAPIVAN/Carrier/Aggregate";
 
@@ -25,13 +25,15 @@ public class LoginService {
         bodyParams.put("cardEncrypt", password);
         bodyParams.put("timeStamp", timeStamp);
         bodyParams.put("uuid", "0004");
-        bodyParams.put("appID", "EINV7202407292089");
+        bodyParams.put("appID", "EINV7202407292089");//EINV7202407292089
         bodyParams.put("signature", signature);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         String pay = convertMapToUrlEncodedString(bodyParams);
+        //String pay = bodyParams.toString();
+
 
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> entity = new HttpEntity<>(pay, headers);
@@ -47,13 +49,19 @@ public class LoginService {
         if (response != null ){//&& "執行成功".equals(responseData.msg)) {
             // Success: Navigate to home or perform the desired action
             System.out.println("response: " + response);
+            System.out.println("response code: " + response.getBody().get("code"));
+
 
             navigateToHome();
+            return response.getBody().get("code").toString();
         } else {
             String errorMessage = "登入失敗: " ;//+ (responseData != null ? responseData.getMsg() : "Unknown error");
             // Handle error accordingly
             System.out.println("response: " + errorMessage);
+            
             System.err.println(errorMessage);
+            return response.getBody().get("code").toString();
+            
         }
     }
 

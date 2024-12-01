@@ -34,9 +34,9 @@ public class einvoiceLoginController {
         System.out.println("Decoded Username: " + decodedUsername);
         System.out.println("Decoded Password: " + decodedPassword);
 
-        Map<String, String> params = new TreeMap<>();
+        Map<String, String> params = new TreeMap<String, String>();
         long currentTimeInSeconds = Instant.now().getEpochSecond();
-        String timeStamp = Long.toString(currentTimeInSeconds + 30);
+        String timeStamp = Long.toString(currentTimeInSeconds + 10);
 
         params.put("version", "1.0");
         params.put("serial", "0000000003");
@@ -49,6 +49,8 @@ public class einvoiceLoginController {
         params.put("uuid", "0004");
 
         String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
+        //String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
+
 
         try {
             Map<String, String> sortedParams = new TreeMap<>(params);
@@ -63,7 +65,7 @@ public class einvoiceLoginController {
                         .append("=")
                         .append(entry.getValue());
             }
-
+            
             // Apply HMAC-SHA256 with the API key
             Mac sha256Hmac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKeySpec = new SecretKeySpec(apiKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
@@ -78,9 +80,9 @@ public class einvoiceLoginController {
             System.out.println("Generated Timestamp: " + timeStamp);
 
             // Call the service function (if needed for further logic)
-            loginService.performApiCall(decodedUsername, decodedPassword,timeStamp,signature);
+            String status=loginService.performApiCall(decodedUsername, decodedPassword,timeStamp,signature);
 
-            return new Response("OK", signature, timeStamp);
+            return new Response(status, signature, timeStamp);
         } catch (Exception e) {
             // Handle exceptions gracefully
             return new Response("Error generating signature: " + e.getMessage(), "", "");
