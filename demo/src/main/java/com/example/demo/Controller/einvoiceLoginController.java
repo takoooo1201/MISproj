@@ -11,20 +11,74 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.time.Instant;
 
+import javax.crypto.Cipher; // For AES encryption/decryption
+import javax.crypto.spec.SecretKeySpec; // For specifying the AES secret key
+
+
 @RestController
 @RequestMapping("api")
 public class einvoiceLoginController {
+    private String decryptAES(String encryptedText, String secretKey) throws Exception {
+        // AES requires a 16-byte key
+        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
+    
+        // Initialize cipher for AES/ECB/PKCS5Padding
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+    
+        // Decode the Base64-encoded encrypted text
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
+    
+        // Decrypt the bytes
+        byte[] originalBytes = cipher.doFinal(decodedBytes);
+    
+        // Return the decrypted text as a UTF-8 string
+        return new String(originalBytes, StandardCharsets.UTF_8);
+    }
+    
     @PostMapping("/login")
     public Response login(@RequestBody LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
+        // Decode Base64-encoded username and password
+        //String decodedUsername = new String(Base64.getDecoder().decode(loginRequest.getUsername()), StandardCharsets.UTF_8);
+        //String decodedPassword = new String(Base64.getDecoder().decode(loginRequest.getPassword()), StandardCharsets.UTF_8);
+        // Secret key must be the same as the client-side
+        //String secret = "your-secret-key"; // Replace with your actual key (must be 16/24/32 bytes)
 
-        // 假設進行一些驗證，例如簡單地檢查帳號和密碼是否符合某個條件
-        // if ("admin".equals(username) && "password".equals(password)) {
-        //     return new Response("Login successful");
-        // } else {
-        //     return new Response("Invalid username or password");
+        // Decrypt username and password
+        //String decryptedUsername = decryptAES(loginRequest.getUsername(), "your-secret-key");
+        //String decryptedPassword = decryptAES(loginRequest.getPassword(), "your-secret-key");
+
+        //System.out.println("Decoded Username: " + decryptedUsername);
+        //System.out.println("Decoded Password: " + decryptedPassword);
+
+        // try {
+        //     // Secret key must be the same as the client-side
+        //     String secretKey1 = "your-secret-keyy"; // Replace with your actual key (must be 16/24/32 bytes)
+    
+        //     // Decrypt username and password
+        //     String decryptedUsername = decryptAES(loginRequest.getUsername(), secretKey1);
+        //     String decryptedPassword = decryptAES(loginRequest.getPassword(), secretKey1);
+    
+        //     System.out.println("Decrypted Username: " + decryptedUsername);
+        //     System.out.println("Decrypted Password: " + decryptedPassword);
+    
+        //     // Proceed with your logic
+        //     // ...
+    
+        //     //return new Response("OK", "signature-placeholder", "timeStamp-placeholder");
+        // } catch (Exception e) {
+        //     // Handle exceptions gracefully
+        //     System.err.println("Error decrypting AES: " + e.getMessage());
+        //     return new Response("Error decrypting AES", "", "");
         // }
+
+        String decodedUsername = new String(Base64.getDecoder().decode(loginRequest.getUsername()), StandardCharsets.UTF_8);
+        String decodedPassword = new String(Base64.getDecoder().decode(loginRequest.getPassword()), StandardCharsets.UTF_8);
+
+        System.out.println("Decoded Username: " + decodedUsername);
+        System.out.println("Decoded Password: " + decodedPassword);
         Map<String, String> params = new TreeMap<String, String>();
         long currentTimeInSeconds = Instant.now().getEpochSecond();
         String timeStamp = Long.toString(currentTimeInSeconds + 30);
@@ -32,8 +86,8 @@ public class einvoiceLoginController {
         params.put("serial", "0000000003");
         params.put("action", "qryCarrierAgg");
         params.put("cardType", "3J0002");
-        params.put("cardNo", username);
-        params.put("cardEncrypt", password);
+        params.put("cardNo", decodedUsername);//decryptedUsername);
+        params.put("cardEncrypt", decodedPassword);//decryptedPassword);
         params.put("appID", "EINV7202407292089");
         params.put("timeStamp", timeStamp);
         params.put("uuid", "0004");
@@ -56,8 +110,8 @@ public class einvoiceLoginController {
 
             // Step 2: Apply HMAC-SHA256 with the API key
             Mac sha256Hmac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKey = new SecretKeySpec(apiKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            sha256Hmac.init(secretKey);
+            SecretKeySpec secretKey1 = new SecretKeySpec(apiKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            sha256Hmac.init(secretKey1);
 
             byte[] hmacBytes = sha256Hmac.doFinal(queryString.toString().getBytes(StandardCharsets.UTF_8));
 
