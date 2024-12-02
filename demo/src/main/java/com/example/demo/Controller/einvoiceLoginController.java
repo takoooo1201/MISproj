@@ -36,7 +36,7 @@ public class einvoiceLoginController {
 
         Map<String, String> params = new TreeMap<String, String>();
         long currentTimeInSeconds = Instant.now().getEpochSecond();
-        String timeStamp = Long.toString(currentTimeInSeconds );
+        String timeStamp = Long.toString(currentTimeInSeconds +10);
 
         params.put("version", "1.0");
         params.put("serial", "0000000003");
