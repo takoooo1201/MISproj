@@ -23,4 +23,14 @@ public class UserService {
     public User saveUser(User user) {
         return userRepository.save(user);
     }
+    public String getVerifyCodeByBarcode(String barcode) {
+        System.out.println("barcode: " + barcode);
+    
+        User user = getUserByBarcode(barcode);
+        if (user != null) {
+            return user.getVerifyCode(); // Assumes `User` has a `getVerifyCode` method
+        } else {
+            return "No user found for the given barcode";
+        }
+    }
 }

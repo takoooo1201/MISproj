@@ -14,7 +14,7 @@ import java.util.TreeMap;
 @RestController
 @RequestMapping("/api")
 public class einvoiceLoginController {
-
+    
     private final LoginService loginService;
 
     // Constructor Injection
@@ -36,7 +36,7 @@ public class einvoiceLoginController {
 
         Map<String, String> params = new TreeMap<String, String>();
         long currentTimeInSeconds = Instant.now().getEpochSecond();
-        String timeStamp = Long.toString(currentTimeInSeconds + 10);
+        String timeStamp = Long.toString(currentTimeInSeconds );
 
         params.put("version", "1.0");
         params.put("serial", "0000000003");

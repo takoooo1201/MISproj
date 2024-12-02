@@ -1,18 +1,30 @@
 package com.example.demo.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.example.demo.Service.JWTService;
 
 import java.time.Instant;
 import java.util.*;
-
+import com.example.demo.Entity.User;
 @Service
 public class EinvoiceService {
+    @Autowired
+    private UserService userService;
 
+    @Autowired
+    private JWTService jwtService;
     private final String apiUrl = "https://api.einvoice.nat.gov.tw/PB2CAPIVAN/invServ/InvServ";
+    
 
     public Map<String, Object> fetchInvoiceDetails(InvoiceRequest request) throws Exception {
+        String bar=this.jwtService.validateToken(request.getToken());
+        System.out.println("bar"+bar);
+        String password = this.userService.getVerifyCodeByBarcode(bar);
+        System.out.println("pass"+password);
+
         String startDate = formatDate(request.getStartDate());
         String endDate = formatDate(request.getEndDate());
 
@@ -22,7 +34,7 @@ public class EinvoiceService {
         Map<String, String> bodyParams = new LinkedHashMap<>();
         bodyParams.put("version", "0.6");
         bodyParams.put("cardType", "3J0002");
-        bodyParams.put("cardNo", "/YM7CBKZ");
+        bodyParams.put("cardNo", bar);
         bodyParams.put("expTimeStamp", "2147483647");
         bodyParams.put("action", "carrierInvChk");
         bodyParams.put("timeStamp", timeStamp);
@@ -31,7 +43,7 @@ public class EinvoiceService {
         bodyParams.put("onlyWinningInv", "N");
         bodyParams.put("uuid", "0007");
         bodyParams.put("appID", "EINV7202407292089");
-        bodyParams.put("cardEncrypt", "Tacopeko@7781");
+        bodyParams.put("cardEncrypt", password);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -78,7 +90,7 @@ public class EinvoiceService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            String body = convertMapToUrlEncodedString(bodyParams);
+            String body = convertMapToUrlEncodedString(bodyParams); 
 
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity<String> entity = new HttpEntity<>(body, headers);
@@ -127,7 +139,7 @@ public class EinvoiceService {
             }
             encodedString.append(entry.getKey()).append("=").append(entry.getValue());
         }
-        return encodedString.toString();
+        return encodedString.toString(); 
     }
 
     public static class InvoiceRequest {
@@ -135,6 +147,8 @@ public class EinvoiceService {
         private String endDate;
         private String username;
         private String password;
+        private String token;
+
 
         // Getters and Setters
         public String getStartDate() {
@@ -167,6 +181,14 @@ public class EinvoiceService {
 
         public void setPassword(String password) {
             this.password = password;
+        }
+        //localStorage.getItem('jwtToken');
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
         }
     }
 }
