@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,6 +16,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Service
 public class LoginService {
+    @Value("${app.key}")
+    private String appKey;
     public String performApiCall(String username, String password){//,String timeStamp, String signature) {
         Map<String, String> params = new TreeMap<String, String>();
         long currentTimeInSeconds = Instant.now().getEpochSecond();
@@ -31,7 +34,7 @@ public class LoginService {
         params.put("timeStamp", timeStamp);
         params.put("uuid", "0004");
 
-        String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
+        //String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
 
         try {
             Map<String, String> sortedParams = new TreeMap<>(params);
@@ -49,7 +52,7 @@ public class LoginService {
             
             // Apply HMAC-SHA256 with the API key
             Mac sha256Hmac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKeySpec = new SecretKeySpec(apiKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(appKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
             sha256Hmac.init(secretKeySpec);
 
             byte[] hmacBytes = sha256Hmac.doFinal(queryString.toString().getBytes(StandardCharsets.UTF_8));

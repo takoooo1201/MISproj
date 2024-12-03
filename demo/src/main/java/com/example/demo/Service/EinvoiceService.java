@@ -1,6 +1,7 @@
 package com.example.demo.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +19,8 @@ public class EinvoiceService {
     private JWTService jwtService;
     private final String apiUrl = "https://api.einvoice.nat.gov.tw/PB2CAPIVAN/invServ/InvServ";
     
+    @Value("${app.id}")
+    private String appID;
 
     public Map<String, Object> fetchInvoiceDetails(InvoiceRequest request) throws Exception {
         String bar=this.jwtService.validateToken(request.getToken());
@@ -42,7 +45,7 @@ public class EinvoiceService {
         bodyParams.put("endDate", endDate);
         bodyParams.put("onlyWinningInv", "N");
         bodyParams.put("uuid", "0007");
-        bodyParams.put("appID", "EINV7202407292089");
+        bodyParams.put("appID", appID);
         bodyParams.put("cardEncrypt", password);
 
         HttpHeaders headers = new HttpHeaders();
