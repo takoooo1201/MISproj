@@ -32,8 +32,6 @@ public class LoginService {
         params.put("uuid", "0004");
 
         String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
-        //String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
-
 
         try {
             Map<String, String> sortedParams = new TreeMap<>(params);
@@ -62,21 +60,12 @@ public class LoginService {
             System.out.println("Generated Signature: " + signature);
             System.out.println("Generated Timestamp: " + timeStamp);
 
-            // Call the service function (if needed for further logic)
-            //String status=loginService.performApiCall(decodedUsername, decodedPassword,timeStamp,signature);
-
-            //return new Response(status, signature, timeStamp);
         } catch (Exception e) {
             // Handle exceptions gracefully
-            //return new Response("Error generating signature: " + e.getMessage(), "", "");
-            System.out.println("gg");
+            System.out.println("error in generate signature");
         }
         
-        
-        
-        
-        
-        // Step 2: Make the POST request to '/invoice-api/PB2CAPIVAN/Carrier/Aggregate'
+        //Make the POST request to '/invoice-api/PB2CAPIVAN/Carrier/Aggregate'
         String url = "https://api.einvoice.nat.gov.tw/PB2CAPIVAN/Carrier/Aggregate";
 
         //MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -98,17 +87,12 @@ public class LoginService {
         String pay = convertMapToUrlEncodedString(bodyParams);
         //String pay = bodyParams.toString();
 
-
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> entity = new HttpEntity<>(pay, headers);
 
         ResponseEntity<Map> response = restTemplate.exchange(
                 url, HttpMethod.POST, entity, Map.class
         );
-
-            // if (response.getBody() != null && response.getBody().containsKey("details")) {
-            //     return filterInvoiceDetails((List<Map<String, Object>>) response.getBody().get("details"));
-            // }
 
         if (response != null ){//&& "執行成功".equals(responseData.msg)) {
             // Success: Navigate to home or perform the desired action
@@ -128,11 +112,6 @@ public class LoginService {
             
         }
     }
-
-// } catch (Exception e) {
-// System.err.println("Error during API call: " + e.getMessage());
-// // Handle exception accordingly
-// }
     
     private String convertMapToUrlEncodedString(Map<String, String> params) {
         StringBuilder encodedString = new StringBuilder();
