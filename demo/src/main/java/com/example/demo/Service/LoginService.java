@@ -6,12 +6,76 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 @Service
 public class LoginService {
-    public String performApiCall(String username, String password,String timeStamp, String signature) {
+    public String performApiCall(String username, String password){//,String timeStamp, String signature) {
+        Map<String, String> params = new TreeMap<String, String>();
+        long currentTimeInSeconds = Instant.now().getEpochSecond();
+        String timeStamp = Long.toString(currentTimeInSeconds +1);
+        String signature="";
+
+        params.put("version", "1.0");
+        params.put("serial", "0000000003");
+        params.put("action", "qryCarrierAgg");
+        params.put("cardType", "3J0002");
+        params.put("cardNo", username);
+        params.put("cardEncrypt", password);
+        params.put("appID", "EINV7202407292089");
+        params.put("timeStamp", timeStamp);
+        params.put("uuid", "0004");
+
+        String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
+        //String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
+
+
+        try {
+            Map<String, String> sortedParams = new TreeMap<>(params);
+
+            // Construct the query string with UTF-8 encoding
+            StringBuilder queryString = new StringBuilder();
+            for (Map.Entry<String, String> entry : sortedParams.entrySet()) {
+                if (queryString.length() > 0) {
+                    queryString.append("&");
+                }
+                queryString.append(entry.getKey())
+                        .append("=")
+                        .append(entry.getValue());
+            }
+            
+            // Apply HMAC-SHA256 with the API key
+            Mac sha256Hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(apiKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            sha256Hmac.init(secretKeySpec);
+
+            byte[] hmacBytes = sha256Hmac.doFinal(queryString.toString().getBytes(StandardCharsets.UTF_8));
+
+            // Encode the signature in Base64
+            signature = Base64.getEncoder().encodeToString(hmacBytes);
+
+            System.out.println("Generated Signature: " + signature);
+            System.out.println("Generated Timestamp: " + timeStamp);
+
+            // Call the service function (if needed for further logic)
+            //String status=loginService.performApiCall(decodedUsername, decodedPassword,timeStamp,signature);
+
+            //return new Response(status, signature, timeStamp);
+        } catch (Exception e) {
+            // Handle exceptions gracefully
+            //return new Response("Error generating signature: " + e.getMessage(), "", "");
+            System.out.println("gg");
+        }
+        
+        
+        
+        
+        
         // Step 2: Make the POST request to '/invoice-api/PB2CAPIVAN/Carrier/Aggregate'
         String url = "https://api.einvoice.nat.gov.tw/PB2CAPIVAN/Carrier/Aggregate";
 
