@@ -34,8 +34,6 @@ public class LoginService {
         params.put("timeStamp", timeStamp);
         params.put("uuid", "0004");
 
-        //String apiKey = "QVYyYTNkVDRscHdBZFZlbQ==";
-
         try {
             Map<String, String> sortedParams = new TreeMap<>(params);
 
