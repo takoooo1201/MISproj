@@ -21,7 +21,7 @@ public class LoginService {
     public String performApiCall(String username, String password){//,String timeStamp, String signature) {
         Map<String, String> params = new TreeMap<String, String>();
         long currentTimeInSeconds = Instant.now().getEpochSecond();
-        String timeStamp = Long.toString(currentTimeInSeconds +1);
+        String timeStamp = Long.toString(currentTimeInSeconds +3);
         String signature="";
 
         params.put("version", "1.0");
