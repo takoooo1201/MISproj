@@ -17,7 +17,7 @@ public class JWT_util {
                 .setSubject(username)
                 .setIssuer("TestApp")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000*24))
                 .claim("cardNo", "-1")
                 .signWith(SECRET_KEY)
                 .compact();
