@@ -28,6 +28,11 @@ public class MLDataService {
         String password = this.userService.getVerifyCodeByBarcode(bar);
         System.out.println("pass"+password);
 
+        //added
+        User user = this.userService.getUserByBarcode(bar);
+        String userId = user.get_id();
+        System.out.println("User ID: " + userId);
+
         String startDate = formatDate(request.getStartDate());
         String endDate = formatDate(request.getEndDate());
 
@@ -69,6 +74,7 @@ public class MLDataService {
                 List<Map<String, Object>> items = fetchInvoiceItemDetails(invNum, formattedDate);
                 //added
                 detail.keySet().retainAll(Collections.singleton("invNum"));
+                detail.put("userId", userId);
                 detail.put("items", items);
                 
             }

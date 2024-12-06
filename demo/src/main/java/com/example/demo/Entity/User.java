@@ -2,11 +2,13 @@ package com.example.demo.Entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
+import org.bson.types.ObjectId;
 
 @Document(collection = "Users")
 public class User {
 
     @Id
+    private ObjectId _id;
     private String id; // Maps to "_id"
     private String barcode; // Maps to "Barcode"
     private String VerifyCode; // Maps to "VerifyCode"
@@ -53,6 +55,9 @@ public class User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+    public String get_id() {
+        return _id!=null?_id.toHexString():null;
     }
 }
 
