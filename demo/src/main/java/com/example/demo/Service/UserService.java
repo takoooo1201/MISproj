@@ -33,4 +33,5 @@ public class UserService {
             return "No user found for the given barcode";
         }
     }
+    
 }

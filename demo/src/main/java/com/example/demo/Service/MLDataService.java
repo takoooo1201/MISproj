@@ -71,7 +71,7 @@ public class MLDataService {
                 Map<String, Integer> invDate = (Map<String, Integer>) detail.get("invDate");
                 String formattedDate = formatTaiwanDate(invDate);
 
-                List<Map<String, Object>> items = fetchInvoiceItemDetails(invNum, formattedDate);
+                List<Map<String, Object>> items = fetchInvoiceItemDetails(invNum, formattedDate,bar,password);
                 //added
                 detail.keySet().retainAll(Collections.singleton("invNum"));
                 detail.put("userId", userId);
@@ -82,7 +82,7 @@ public class MLDataService {
         return response.getBody();
     }
 
-    private List<Map<String, Object>> fetchInvoiceItemDetails(String invNum, String invDate) {
+    private List<Map<String, Object>> fetchInvoiceItemDetails(String invNum, String invDate,String bar, String password) {
         try {
             long currentTimestamp = Instant.now().getEpochSecond();
             String timeStamp = String.valueOf(currentTimestamp + 10);
@@ -90,15 +90,15 @@ public class MLDataService {
             Map<String, String> bodyParams = new LinkedHashMap<>();
             bodyParams.put("version", "0.5");
             bodyParams.put("cardType", "3J0002");
-            bodyParams.put("cardNo", "/YM7CBKZ");
+            bodyParams.put("cardNo", bar);
             bodyParams.put("expTimeStamp", "2147483647");
             bodyParams.put("action", "carrierInvDetail");
             bodyParams.put("timeStamp", timeStamp);
             bodyParams.put("invNum", invNum);
             bodyParams.put("invDate", invDate);
             bodyParams.put("uuid", "0007");
-            bodyParams.put("appID", "EINV7202407292089");
-            bodyParams.put("cardEncrypt", "Tacopeko@7781");
+            bodyParams.put("appID", appID);
+            bodyParams.put("cardEncrypt", password);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

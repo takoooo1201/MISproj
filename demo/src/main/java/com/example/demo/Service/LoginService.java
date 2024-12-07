@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
+import com.example.demo.Entity.User;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,10 +21,20 @@ import javax.crypto.spec.SecretKeySpec;
 public class LoginService {
     @Value("${app.key}")
     private String appKey;
+
+    @Value("${app.id}")
+    private String appID;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private JWTService jwtService;
+
     public String performApiCall(String username, String password){//,String timeStamp, String signature) {
         Map<String, String> params = new TreeMap<String, String>();
         long currentTimeInSeconds = Instant.now().getEpochSecond();
-        String timeStamp = Long.toString(currentTimeInSeconds +3);
+        String timeStamp = Long.toString(currentTimeInSeconds +20);
         String signature="";
 
         params.put("version", "1.0");
@@ -30,7 +43,7 @@ public class LoginService {
         params.put("cardType", "3J0002");
         params.put("cardNo", username);
         params.put("cardEncrypt", password);
-        params.put("appID", "EINV7202407292089");
+        params.put("appID", appID);
         params.put("timeStamp", timeStamp);
         params.put("uuid", "0004");
 
@@ -79,7 +92,7 @@ public class LoginService {
         bodyParams.put("cardEncrypt", password);
         bodyParams.put("timeStamp", timeStamp);
         bodyParams.put("uuid", "0004");
-        bodyParams.put("appID", "EINV7202407292089");//EINV7202407292089
+        bodyParams.put("appID", appID);//EINV7202407292089
         bodyParams.put("signature", signature);
 
         HttpHeaders headers = new HttpHeaders();
@@ -94,22 +107,46 @@ public class LoginService {
         ResponseEntity<Map> response = restTemplate.exchange(
                 url, HttpMethod.POST, entity, Map.class
         );
-
-        if (response != null ){//&& "執行成功".equals(responseData.msg)) {
+        System.out.println("whole response: " + response);
+        if (response.getBody().get("code").toString().equals("200") ){//&& "執行成功".equals(responseData.msg)) {
             // Success: Navigate to home or perform the desired action
+            if(response.getBody().get("code")=="200"){
+                System.out.println("haha:"+response.getBody().get("code"));
+            }
             System.out.println("response: " + response);
             System.out.println("response code: " + response.getBody().get("code"));
 
+            User existingUser = userService.getUserByBarcode(username);
+            String token = jwtService.generateToken(username);
+
+            if (existingUser == null) {
+                User newUser = new User();
+                newUser.setBarcode(username);
+                newUser.setVerifyCode(password);
+                newUser.setLastVerifiedAt(LocalDateTime.now());
+                newUser.setToken(token);
+                newUser.setCardNo("-1");
+
+                userService.saveUser(newUser);
+                System.out.println("New user created: " + newUser);
+            } else {
+                existingUser.setToken(token);
+                userService.saveUser(existingUser);
+                System.out.println("User token updated: " + existingUser);
+            }
+
 
             navigateToHome();
-            return response.getBody().get("code").toString();
+            //return response.getBody().get("code").toString();
+            return token;
         } else {
             String errorMessage = "登入失敗: " ;//+ (responseData != null ? responseData.getMsg() : "Unknown error");
             // Handle error accordingly
             System.out.println("response: " + errorMessage);
             
-            System.err.println(errorMessage);
-            return response.getBody().get("code").toString();
+            System.out.println(response.getBody().get("code").toString());
+            //return response.getBody().get("code").toString();
+            return "error";
             
         }
     }

@@ -14,7 +14,7 @@ public class User {
     private String VerifyCode; // Maps to "VerifyCode"
     private LocalDateTime lastVerifiedAt; // Maps to "lastVerifiedAt"
     private String token; // Maps to "token"
-
+    private String cardNo;
     // Getters and setters
 
     public String getId() {
@@ -58,6 +58,13 @@ public class User {
     }
     public String get_id() {
         return _id!=null?_id.toHexString():null;
+    }
+    public String getCardNo() {
+        return cardNo;
+    }
+
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
     }
 }
 
